@@ -21,7 +21,7 @@ public class VideoFile implements Serializable  {
 		return title;
 	}
 	
-	public String getFilename()
+	public  String getFilename()
 	{
 		return filename;
 	}

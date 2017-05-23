@@ -50,17 +50,16 @@ public class MEMEPlayer {
 		mediaPlayerComponent.release();
 		}
 	}	);
-
+	
+	System.out.println("loop");
+	
 	contentPane.add(mediaPlayerComponent, BorderLayout.CENTER);
 	EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
 	PlayerControlsPanel controlsPanel = new PlayerControlsPanel(mediaPlayer);
 	mainFrame.add(controlsPanel, BorderLayout.SOUTH);
-	}
 	
-	public void getPlayer()
-	{
-		String media = "rtp://@127.0.0.1:1172"; // shouldn't this be the media file name?
-		mediaPlayer.playMedia(media);
+	String media = "rtp://@127.0.0.1:1172";
+	mediaPlayer.playMedia(media);
 	}
 	
 
