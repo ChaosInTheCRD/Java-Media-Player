@@ -2,6 +2,8 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -16,6 +18,9 @@ import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import javax.swing.*;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
@@ -39,7 +44,7 @@ public class MEMEClient extends JFrame implements ActionListener {
 	ObjectInputStream inputFromServer;
 	ObjectOutputStream outputToServer;
 	Container contentPane;
-	JComboBox selectionBox;
+	//JComboBox selectionBox;
 	String selectedTitle;
 	
 	//MEMEPlayer memePlayer;
@@ -56,7 +61,6 @@ public class MEMEClient extends JFrame implements ActionListener {
 			socket();
 			getListFromSocket();
 			setupGUI();
-			getDisplay();
 			playMedia();
 		} catch (UnknownHostException e) {
 			System.out.println("Don't know about host : " + host);
@@ -72,11 +76,15 @@ public class MEMEClient extends JFrame implements ActionListener {
 	}
 
 	private void setupGUI() {
+		JPanel buttonPanel = new JPanel();
+		JButton button1 = new JButton("TEST");
+		
 		setTitle("Video Player");
-		setSize(600, 400);
+		setSize(1280, 1024);
 		setVisible(true);
 		contentPane = getContentPane();
 		contentPane.setLayout(new BorderLayout());
+		
 		String[] selectionListData = new String[videoList.size()];
 		
 		for (int i = 0; i < videoList.size(); i++)
@@ -84,12 +92,20 @@ public class MEMEClient extends JFrame implements ActionListener {
 			selectionListData[i] = videoList.get(i).getTitle();
 		}
 		
-		selectionBox = new JComboBox(selectionListData);
-		selectionBox.setSelectedIndex(0);
-
-		add(selectionBox, BorderLayout.NORTH);
-		selectionBox.addActionListener(this);
+//		selectionBox = new JComboBox(selectionListData);
+//		selectionBox.setSelectedIndex(0);
+		
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		buttonPanel.add(button1);
+		add(buttonPanel, BorderLayout.WEST);
+		button1.addActionListener(this);
 		validate();
+		
+		
+
+//		add(selectionBox, BorderLayout.WEST);
+//		selectionBox.addActionListener(this);
+		
 		
 		mainFrame = new JFrame();
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), vlcLibraryPath);
@@ -106,10 +122,10 @@ public class MEMEClient extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		JComboBox comboBox = (JComboBox) e.getSource();
-		selectedTitle = (String) comboBox.getSelectedItem();
+		JButton button1 = (JButton) e.getSource();
+		selectedTitle = videoList.get(0).getTitle();
 		System.out.println("Selected title : " + selectedTitle);
-		selectedFile = videoList.get(comboBox.getSelectedIndex()).getFilename();
+		selectedFile = videoList.get(0).getFilename();
 		
 		try {
 			sendToServer();
@@ -144,13 +160,6 @@ public class MEMEClient extends JFrame implements ActionListener {
 	
 	public static void main(String[] args) {
 		new MEMEClient();
-	}
-	
-	
-	
-	public void getDisplay()
-	{	
-	
 	}
 	
 	public void playMedia()
