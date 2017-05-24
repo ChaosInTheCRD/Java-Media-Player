@@ -89,6 +89,11 @@ public class MEMEClient extends JFrame implements ActionListener {
 		ImageIcon MovingAvengers = new ImageIcon("Film_Pics/MovingAvengers.gif");
 		ImageIcon DefaultDescription = new ImageIcon("Film_Pics/DefaultDescription.png");
 		ImageIcon MonstersDescription = new ImageIcon("Film_Pics/MonstersDescription.png");
+		ImageIcon AvengersDescription = new ImageIcon("Film_Pics/AvengersDescription.png");
+		ImageIcon PrometheusDescription = new ImageIcon("Film_Pics/PrometheusDescription.png");
+		ImageIcon MonstersPlaying = new ImageIcon("Film_Pics/MonstersPlaying.gif");
+		ImageIcon AvengersPlaying = new ImageIcon("Film_Pics/AvengersPlaying.gif");
+		ImageIcon PrometheusPlaying = new ImageIcon("Film_Pics/PrometheusPlaying.gif");
 		JButton button1 = new JButton(Monsters);
 		button1.setActionCommand("1");
 		JButton button2 = new JButton(Avengers);
@@ -96,7 +101,8 @@ public class MEMEClient extends JFrame implements ActionListener {
 		JButton button3 = new JButton(Prometheus);
 		button3.setActionCommand("3");
 		
-		JButton buttonDesc = new JButton(DefaultDescription);
+		JLabel labelDesc = new JLabel(DefaultDescription);
+		JLabel PlayingStatus = new JLabel(MonstersPlaying);
 		
 		setTitle("Video Player");
 		setSize(1280, 1024);
@@ -115,12 +121,13 @@ public class MEMEClient extends JFrame implements ActionListener {
 //		selectionBox.setSelectedIndex(0);
 		
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-		buttonPanel.add(Box.createVerticalStrut(220));
+		buttonPanel.add(PlayingStatus);
+		buttonPanel.add(Box.createVerticalStrut(90));
 		buttonPanel.add(button1);
 		//buttonPanel.add(Box.createVerticalStrut(220));
 		buttonPanel.add(button2);
 		buttonPanel.add(button3);
-		buttonPanel.add(buttonDesc);
+		buttonPanel.add(labelDesc);
 		buttonPanel.setBackground(Color.BLACK);
 		add(buttonPanel, BorderLayout.WEST);
 		button1.addActionListener(this);
@@ -134,43 +141,67 @@ public class MEMEClient extends JFrame implements ActionListener {
 		button1.setBorder(emptyBorder);
 		button2.setBorder(emptyBorder);
 		button3.setBorder(emptyBorder);
-		buttonDesc.setBorder(emptyBorder);
+		labelDesc.setBorder(emptyBorder);
 		
 		
 		
 		button1.addMouseListener(new java.awt.event.MouseAdapter() {
 		    public void mouseEntered(java.awt.event.MouseEvent evt) {
 		        button1.setIcon(MovingMonsters);
-		        buttonDesc.setIcon(MonstersDescription);
+		        labelDesc.setIcon(MonstersDescription);
 		    }
 
 		    public void mouseExited(java.awt.event.MouseEvent evt) {
 		        button1.setIcon(Monsters);
-		        buttonDesc.setIcon(DefaultDescription);
+		        labelDesc.setIcon(DefaultDescription);
 		    }
 		});
+		
+		button1.addActionListener(new ActionListener() { 
+			  public void actionPerformed(ActionEvent e)
+			  { 
+			    PlayingStatus.setIcon(MonstersPlaying);
+			  } 
+			} );
+		
 		
 		button2.addMouseListener(new java.awt.event.MouseAdapter() {
 		    public void mouseEntered(java.awt.event.MouseEvent evt) {
 		        button2.setIcon(MovingAvengers);
+		        labelDesc.setIcon(AvengersDescription);
 		    }
 
 		    public void mouseExited(java.awt.event.MouseEvent evt) {
 		        button2.setIcon(Avengers);
+		        labelDesc.setIcon(DefaultDescription);
 		    }
 		});
+		
+		button2.addActionListener(new ActionListener() { 
+			  public void actionPerformed(ActionEvent e)
+			  { 
+			    PlayingStatus.setIcon(AvengersPlaying);
+			  } 
+			} );
 		
 		button3.addMouseListener(new java.awt.event.MouseAdapter() {
 		    public void mouseEntered(java.awt.event.MouseEvent evt) {
 		        button3.setIcon(MovingPrometheus);
+		        labelDesc.setIcon(PrometheusDescription);
 		    }
 
 		    public void mouseExited(java.awt.event.MouseEvent evt) {
 		        button3.setIcon(Prometheus);
+		        labelDesc.setIcon(DefaultDescription);
 		    }
 		});
 		
-		
+		button3.addActionListener(new ActionListener() { 
+			  public void actionPerformed(ActionEvent e)
+			  { 
+			    PlayingStatus.setIcon(PrometheusPlaying);
+			  } 
+			} );
 
 //		add(selectionBox, BorderLayout.WEST);
 //		selectionBox.addActionListener(this);
