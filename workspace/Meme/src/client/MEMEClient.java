@@ -1,9 +1,12 @@
 package client;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -19,6 +22,8 @@ import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.Box;
 
 import javax.swing.*;
 
@@ -33,7 +38,6 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.headless.HeadlessMediaPlayer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-import uk.co.caprica.vlcj.test.basic.PlayerControlsPanel;
 
 public class MEMEClient extends JFrame implements ActionListener {
 
@@ -57,7 +61,6 @@ public class MEMEClient extends JFrame implements ActionListener {
 	public MEMEClient() {
 		super();
 		try {
-			//memePlayer=new MEMEPlayer();
 			socket();
 			getListFromSocket();
 			setupGUI();
@@ -77,7 +80,23 @@ public class MEMEClient extends JFrame implements ActionListener {
 
 	private void setupGUI() {
 		JPanel buttonPanel = new JPanel();
-		JButton button1 = new JButton("TEST");
+		ImageIcon Monsters = new ImageIcon("Film_Pics/MonstersInc.jpeg");
+		Monsters.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT);
+		ImageIcon Avengers = new ImageIcon("Film_Pics/TheAvengers.jpg");
+		ImageIcon Prometheus = new ImageIcon("Film_Pics/Prometheus.jpg");
+		ImageIcon MovingMonsters = new ImageIcon("Film_Pics/lalala.gif");
+		ImageIcon MovingPrometheus = new ImageIcon("Film_Pics/MovingPrometheus.gif");
+		ImageIcon MovingAvengers = new ImageIcon("Film_Pics/MovingAvengers.gif");
+		ImageIcon DefaultDescription = new ImageIcon("Film_Pics/DefaultDescription.png");
+		ImageIcon MonstersDescription = new ImageIcon("Film_Pics/MonstersDescription.png");
+		JButton button1 = new JButton(Monsters);
+		button1.setActionCommand("1");
+		JButton button2 = new JButton(Avengers);
+		button2.setActionCommand("2");
+		JButton button3 = new JButton(Prometheus);
+		button3.setActionCommand("3");
+		
+		JButton buttonDesc = new JButton(DefaultDescription);
 		
 		setTitle("Video Player");
 		setSize(1280, 1024);
@@ -95,11 +114,61 @@ public class MEMEClient extends JFrame implements ActionListener {
 //		selectionBox = new JComboBox(selectionListData);
 //		selectionBox.setSelectedIndex(0);
 		
-		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+		buttonPanel.add(Box.createVerticalStrut(220));
 		buttonPanel.add(button1);
+		//buttonPanel.add(Box.createVerticalStrut(220));
+		buttonPanel.add(button2);
+		buttonPanel.add(button3);
+		buttonPanel.add(buttonDesc);
+		buttonPanel.setBackground(Color.BLACK);
 		add(buttonPanel, BorderLayout.WEST);
 		button1.addActionListener(this);
+		button2.addActionListener(this);
+		button3.addActionListener(this);
+
+		
 		validate();
+		
+		Border emptyBorder = BorderFactory.createEmptyBorder();
+		button1.setBorder(emptyBorder);
+		button2.setBorder(emptyBorder);
+		button3.setBorder(emptyBorder);
+		buttonDesc.setBorder(emptyBorder);
+		
+		
+		
+		button1.addMouseListener(new java.awt.event.MouseAdapter() {
+		    public void mouseEntered(java.awt.event.MouseEvent evt) {
+		        button1.setIcon(MovingMonsters);
+		        buttonDesc.setIcon(MonstersDescription);
+		    }
+
+		    public void mouseExited(java.awt.event.MouseEvent evt) {
+		        button1.setIcon(Monsters);
+		        buttonDesc.setIcon(DefaultDescription);
+		    }
+		});
+		
+		button2.addMouseListener(new java.awt.event.MouseAdapter() {
+		    public void mouseEntered(java.awt.event.MouseEvent evt) {
+		        button2.setIcon(MovingAvengers);
+		    }
+
+		    public void mouseExited(java.awt.event.MouseEvent evt) {
+		        button2.setIcon(Avengers);
+		    }
+		});
+		
+		button3.addMouseListener(new java.awt.event.MouseAdapter() {
+		    public void mouseEntered(java.awt.event.MouseEvent evt) {
+		        button3.setIcon(MovingPrometheus);
+		    }
+
+		    public void mouseExited(java.awt.event.MouseEvent evt) {
+		        button3.setIcon(Prometheus);
+		    }
+		});
 		
 		
 
@@ -118,14 +187,29 @@ public class MEMEClient extends JFrame implements ActionListener {
 		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
 		PlayerControlsPanel controlsPanel = new PlayerControlsPanel(mediaPlayer);
 		mainFrame.add(controlsPanel, BorderLayout.SOUTH);
+		//bottomPanel.setBackground(Color.BLACK);
 
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		int num = 0;
+		if(e.getActionCommand() == "1")
+		{
+			num = 0;
+		}
+		else if(e.getActionCommand() == "2")
+		{
+			num  = 1;
+		}
+		else if(e.getActionCommand() == "3")
+		{
+			num = 2;
+		}
+			
 		JButton button1 = (JButton) e.getSource();
-		selectedTitle = videoList.get(0).getTitle();
+		selectedTitle = videoList.get(num).getTitle();
 		System.out.println("Selected title : " + selectedTitle);
-		selectedFile = videoList.get(0).getFilename();
+		selectedFile = videoList.get(num).getFilename();
 		
 		try {
 			sendToServer();
@@ -133,7 +217,18 @@ public class MEMEClient extends JFrame implements ActionListener {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+			
+			try {
+				sendToServer();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		
+		
 	}
+
+
 	
 	// Designed to send chosen "selected title back to the server
 	public void sendToServer() throws IOException
