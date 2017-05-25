@@ -29,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +42,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -53,28 +56,28 @@ import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 public class PlayerControlsPanel extends JPanel {
-
-   // private static final long serialVersionUID = 1L;
-
+    // private static final long serialVersionUID = 1L;
     //private static final int SKIP_TIME_MS = 10 * 1000;
-
     //private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
     private final EmbeddedMediaPlayer mediaPlayer;
 
     private JButton previousVideoButton;
     private JButton stopButton;
-    //private JButton pauseButton;
     private JButton playButton;
     private JButton nextVideoButton;
 
     private JButton toggleMuteButton;
     private JSlider volumeSlider;
-    private boolean mousePressedPlaying = false;
+    private boolean PlayOrPause = false;
+    private boolean MuteorSound = false;
+    ImageIcon Play = new ImageIcon("Film_Pics/Icons/Play.png");
+    ImageIcon Pause = new ImageIcon("Film_Pics/Icons/Pause.png");
+    ImageIcon Mute = new ImageIcon("Film_Pics/Icons/Mute.png");
+    ImageIcon Sound = new ImageIcon("Film_Pics/Icons/Unmute.png");
 
     public PlayerControlsPanel(EmbeddedMediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
-
         createUI();
         
     }
@@ -94,7 +97,8 @@ public class PlayerControlsPanel extends JPanel {
         previousVideoButton.setContentAreaFilled(false); 
         previousVideoButton.setFocusPainted(false); 
         previousVideoButton.setOpaque(false);
-
+        previousVideoButton.setActionCommand("2");
+        
         stopButton = new JButton();
         stopButton.setIcon(new ImageIcon("Film_Pics/Icons/Stop.png"));
         stopButton.setToolTipText("Stop");
@@ -108,7 +112,7 @@ public class PlayerControlsPanel extends JPanel {
         pauseButton.setToolTipText("Play/pause");*/
 
         playButton = new JButton();
-        playButton.setIcon(new ImageIcon("Film_Pics/Icons/Play.png"));
+        playButton.setIcon(new ImageIcon("Film_Pics/Icons/Pause.png"));
         playButton.setToolTipText("Play");
         playButton.setBorderPainted(false); 
         playButton.setContentAreaFilled(false); 
@@ -123,6 +127,7 @@ public class PlayerControlsPanel extends JPanel {
         nextVideoButton.setContentAreaFilled(false); 
         nextVideoButton.setFocusPainted(false); 
         nextVideoButton.setOpaque(false);
+        nextVideoButton.setActionCommand("1");
 
 
         toggleMuteButton = new JButton();
@@ -139,11 +144,11 @@ public class PlayerControlsPanel extends JPanel {
         volumeSlider.setMaximum(LibVlcConst.MAX_VOLUME);
         volumeSlider.setPreferredSize(new Dimension(100, 40));
         volumeSlider.setToolTipText("Change volume");
-
+        volumeSlider.setOpaque(false);
 
     }
-
     private void layoutControls() {
+    	
         setBorder(new EmptyBorder(0, 0, 0, 0));
 
         setLayout(new BorderLayout());
@@ -183,41 +188,18 @@ public class PlayerControlsPanel extends JPanel {
         positionPanel.setBackground(Color.BLACK);
     }
 
-    /**
-     * Broken out position setting, handles updating mediaPlayer
-     */
-    private void setSliderBasedPosition() {
-        if(!mediaPlayer.isSeekable()) {
-            return;
-        }
-    }
+    
+    public void setButtonsActionListener(ActionListener listener)
+    {
 
-    private void updateUIState() {
-        if(!mediaPlayer.isPlaying()) {
-            // Resume play or play a few frames then pause to show current position in video
-            mediaPlayer.play();
-            if(!mousePressedPlaying) {
-                try {
-                    // Half a second probably gets an iframe
-                    Thread.sleep(500);
-                }
-                catch(InterruptedException e) {
-                    // Don't care if unblocked early
-                }
-                mediaPlayer.pause();
-            }
-        }
-    }
-
-    private void skip(int skipTime) {
-        // Only skip time if can handle time setting
-        if(mediaPlayer.getLength() > 0) {
-            mediaPlayer.skip(skipTime);
-            updateUIState();
-        }
+    	   nextVideoButton.addActionListener(listener);
+    	   previousVideoButton.addActionListener(listener);
+ 
     }
 
     private void registerListeners() {
+    	
+    	
         mediaPlayer.addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
             @Override
             public void playing(MediaPlayer mediaPlayer) {
@@ -238,31 +220,40 @@ public class PlayerControlsPanel extends JPanel {
             }
         });
 
-    /*    pauseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mediaPlayer.pause();
-            }
-        });*/
-
         playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mediaPlayer.play();
+            	if(PlayOrPause == false)
+            	{
+                mediaPlayer.pause();
+                playButton.setIcon(Play);
+                PlayOrPause = true;
+            	}
+            	else
+            	{
+            		mediaPlayer.play();
+            		playButton.setIcon(Pause);
+            		PlayOrPause = false;
+            	}
             }
         });
-
-        nextVideoButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mediaPlayer.nextChapter();
-            }
-        });
-
+        
         toggleMuteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+               	if(MuteorSound == false)
+            	{
                 mediaPlayer.mute();
+                toggleMuteButton.setIcon(Sound);
+                MuteorSound = true;
+            	}
+               	
+            	else
+            	{
+            		mediaPlayer.mute();
+            		toggleMuteButton.setIcon(Mute);
+            		MuteorSound = false;
+            	}
             }
         });
 

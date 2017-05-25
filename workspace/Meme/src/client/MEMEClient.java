@@ -51,12 +51,20 @@ public class MEMEClient extends JFrame implements ActionListener {
 	//JComboBox selectionBox;
 	String selectedTitle;
 	
+	public static int num = 0;
+	
 	//MEMEPlayer memePlayer;
 	public String vlcLibraryPath = "vlc-2.0.1";
 	public JFrame mainFrame;
 	public EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	public EmbeddedMediaPlayer mediaPlayer;
 	private String selectedFile;
+	
+	ImageIcon MonstersPlaying = new ImageIcon("Film_Pics/MonstersPlaying.gif");
+	ImageIcon AvengersPlaying = new ImageIcon("Film_Pics/AvengersPlaying.gif");
+	ImageIcon PrometheusPlaying = new ImageIcon("Film_Pics/PrometheusPlaying.gif");
+	
+	JLabel PlayingStatus = new JLabel(MonstersPlaying);
 
 	public MEMEClient() {
 		super();
@@ -91,9 +99,6 @@ public class MEMEClient extends JFrame implements ActionListener {
 		ImageIcon MonstersDescription = new ImageIcon("Film_Pics/MonstersDescription.png");
 		ImageIcon AvengersDescription = new ImageIcon("Film_Pics/AvengersDescription.png");
 		ImageIcon PrometheusDescription = new ImageIcon("Film_Pics/PrometheusDescription.png");
-		ImageIcon MonstersPlaying = new ImageIcon("Film_Pics/MonstersPlaying.gif");
-		ImageIcon AvengersPlaying = new ImageIcon("Film_Pics/AvengersPlaying.gif");
-		ImageIcon PrometheusPlaying = new ImageIcon("Film_Pics/PrometheusPlaying.gif");
 		JButton button1 = new JButton(Monsters);
 		button1.setActionCommand("1");
 		JButton button2 = new JButton(Avengers);
@@ -102,7 +107,6 @@ public class MEMEClient extends JFrame implements ActionListener {
 		button3.setActionCommand("3");
 		
 		JLabel labelDesc = new JLabel(DefaultDescription);
-		JLabel PlayingStatus = new JLabel(MonstersPlaying);
 		
 		setTitle("Video Player");
 		setSize(1280, 1024);
@@ -202,9 +206,7 @@ public class MEMEClient extends JFrame implements ActionListener {
 			    PlayingStatus.setIcon(PrometheusPlaying);
 			  } 
 			} );
-
-//		add(selectionBox, BorderLayout.WEST);
-//		selectionBox.addActionListener(this);
+		
 		
 		
 		mainFrame = new JFrame();
@@ -218,12 +220,69 @@ public class MEMEClient extends JFrame implements ActionListener {
 		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
 		PlayerControlsPanel controlsPanel = new PlayerControlsPanel(mediaPlayer);
 		mainFrame.add(controlsPanel, BorderLayout.SOUTH);
-		//bottomPanel.setBackground(Color.BLACK);
 
+		controlsPanel.setButtonsActionListener(new ActionListener(){
+	        @Override
+			public void actionPerformed(ActionEvent e){
+	        	
+	        	if(e.getActionCommand() == "1")
+	        	{
+	        		System.out.println("Plus!");
+	        		num = num+1;
+	        		
+	        		if(num == 3)
+	        		{
+	        			num = 0;
+	        		}
+	        		
+	        		System.out.println(num);
+	        		
+	        	}
+	        	
+	        	else if(e.getActionCommand() == "2")
+	        	{
+	        		
+	        		System.out.println("Previous!");
+	        		num = num -1;
+	        		if(num == -1)
+	        		{
+	        			num = 2;
+	        		}
+	        		
+	        		System.out.println(num);
+	        	}
+	        	
+	        	if(num == 0)
+	        	{
+	        		PlayingStatus.setIcon(MonstersPlaying);
+	        	}
+	        	
+	        	if(num == 1)
+	        	{
+	        		PlayingStatus.setIcon(AvengersPlaying);
+	        	}
+	        	
+	        	if(num == 2)
+	        	{
+	        		PlayingStatus.setIcon(PrometheusPlaying);
+	        	}
+	        	
+	    		selectedTitle = videoList.get(num).getTitle();
+	    		System.out.println("Selected title : " + selectedTitle);
+	    		selectedFile = videoList.get(num).getFilename();
+	    		
+	    		try {
+	    			sendToServer();
+	    		} catch (IOException e1) {
+	    			// TODO Auto-generated catch block
+	    			e1.printStackTrace();
+	    		}
+	        }
+
+	    });
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		int num = 0;
 		if(e.getActionCommand() == "1")
 		{
 			num = 0;
@@ -249,13 +308,14 @@ public class MEMEClient extends JFrame implements ActionListener {
 			e1.printStackTrace();
 		}
 			
-			try {
-				sendToServer();
+			/*try {
+				sendToServer(0);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		
+			*/
+		disable(button1, 2000);
 		
 	}
 
@@ -293,5 +353,18 @@ public class MEMEClient extends JFrame implements ActionListener {
 	
 		String media = "rtp://@127.0.0.1:1175";
 		mediaPlayer.playMedia(media);
+	}
+	
+	static void disable(final AbstractButton b, final long ms) {
+	    b.setEnabled(false);
+	    new SwingWorker() {
+	        @Override protected Object doInBackground() throws Exception {
+	            Thread.sleep(ms);
+	            return null;
+	        }
+	        @Override protected void done() {
+	            b.setEnabled(true);
+	        }
+	    }.execute();
 	}
 }
