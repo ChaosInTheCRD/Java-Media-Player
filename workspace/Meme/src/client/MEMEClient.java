@@ -56,6 +56,7 @@ public class MEMEClient extends JFrame implements ActionListener {
 	//MEMEPlayer memePlayer;
 	public String vlcLibraryPath = "vlc-2.0.1";
 	public JFrame mainFrame;
+	public JFrame LoadingFrame;
 	public EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	public EmbeddedMediaPlayer mediaPlayer;
 	private String selectedFile;
@@ -63,8 +64,8 @@ public class MEMEClient extends JFrame implements ActionListener {
 	ImageIcon MonstersPlaying = new ImageIcon("Film_Pics/MonstersPlaying.gif");
 	ImageIcon AvengersPlaying = new ImageIcon("Film_Pics/AvengersPlaying.gif");
 	ImageIcon PrometheusPlaying = new ImageIcon("Film_Pics/PrometheusPlaying.gif");
-	
-	JLabel PlayingStatus = new JLabel(MonstersPlaying);
+	ImageIcon MEMEPlayer = new ImageIcon("Film_Pics/MEMEPlayer.PNG");
+	JLabel PlayingStatus = new JLabel(MEMEPlayer);
 
 	public MEMEClient() {
 		super();
@@ -107,12 +108,31 @@ public class MEMEClient extends JFrame implements ActionListener {
 		button3.setActionCommand("3");
 		
 		JLabel labelDesc = new JLabel(DefaultDescription);
+		mainFrame = new JFrame();
 		
-		setTitle("Video Player");
+		setTitle("MEMEPlayer");
 		setSize(1280, 1024);
 		setVisible(true);
 		contentPane = getContentPane();
 		contentPane.setLayout(new BorderLayout());
+
+		//Insertion of Loading Screen//
+		
+		JLabel LoadingScreen = new JLabel();
+		contentPane.add(LoadingScreen, BorderLayout.CENTER);
+		LoadingScreen.setIcon(new ImageIcon("Film_Pics/Loading.gif"));
+		contentPane.setBackground(Color.BLACK);
+		LoadingScreen.setVisible(true);
+		LoadingScreen.setHorizontalAlignment(SwingConstants.CENTER);
+		validate();
+		
+		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), vlcLibraryPath);
+		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+		EmbeddedMediaPlayerComponent mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+		mediaPlayer =  mediaPlayerComponent.getMediaPlayer();
+		mainFrame.setContentPane(mediaPlayerComponent);
+		
+
 		
 		String[] selectionListData = new String[videoList.size()];
 		
@@ -121,14 +141,11 @@ public class MEMEClient extends JFrame implements ActionListener {
 			selectionListData[i] = videoList.get(i).getTitle();
 		}
 		
-//		selectionBox = new JComboBox(selectionListData);
-//		selectionBox.setSelectedIndex(0);
-		
+
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 		buttonPanel.add(PlayingStatus);
-		buttonPanel.add(Box.createVerticalStrut(90));
+		buttonPanel.add(Box.createVerticalStrut(110));
 		buttonPanel.add(button1);
-		//buttonPanel.add(Box.createVerticalStrut(220));
 		buttonPanel.add(button2);
 		buttonPanel.add(button3);
 		buttonPanel.add(labelDesc);
@@ -137,15 +154,25 @@ public class MEMEClient extends JFrame implements ActionListener {
 		button1.addActionListener(this);
 		button2.addActionListener(this);
 		button3.addActionListener(this);
-
-		
-		validate();
 		
 		Border emptyBorder = BorderFactory.createEmptyBorder();
 		button1.setBorder(emptyBorder);
 		button2.setBorder(emptyBorder);
 		button3.setBorder(emptyBorder);
 		labelDesc.setBorder(emptyBorder);
+
+		
+		contentPane.remove(LoadingScreen);
+		contentPane.validate();
+		contentPane.repaint();
+		contentPane.add(mediaPlayerComponent, BorderLayout.CENTER);
+		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
+		PlayerControlsPanel controlsPanel = new PlayerControlsPanel(mediaPlayer);
+		mainFrame.add(controlsPanel, BorderLayout.SOUTH);
+		mainFrame.setBackground(Color.BLACK);
+		validate();
+		
+
 		
 		
 		
@@ -153,6 +180,7 @@ public class MEMEClient extends JFrame implements ActionListener {
 		    public void mouseEntered(java.awt.event.MouseEvent evt) {
 		        button1.setIcon(MovingMonsters);
 		        labelDesc.setIcon(MonstersDescription);
+		        
 		    }
 
 		    public void mouseExited(java.awt.event.MouseEvent evt) {
@@ -165,6 +193,7 @@ public class MEMEClient extends JFrame implements ActionListener {
 			  public void actionPerformed(ActionEvent e)
 			  { 
 			    PlayingStatus.setIcon(MonstersPlaying);
+			    button1.setDisabledIcon(MovingMonsters);
 			  } 
 			} );
 		
@@ -185,6 +214,7 @@ public class MEMEClient extends JFrame implements ActionListener {
 			  public void actionPerformed(ActionEvent e)
 			  { 
 			    PlayingStatus.setIcon(AvengersPlaying);
+			    button2.setDisabledIcon(MovingAvengers);
 			  } 
 			} );
 		
@@ -204,45 +234,26 @@ public class MEMEClient extends JFrame implements ActionListener {
 			  public void actionPerformed(ActionEvent e)
 			  { 
 			    PlayingStatus.setIcon(PrometheusPlaying);
+			    button3.setDisabledIcon(MovingPrometheus);
 			  } 
 			} );
 		
-		
-		
-		mainFrame = new JFrame();
-		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), vlcLibraryPath);
-		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
-		EmbeddedMediaPlayerComponent mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-		mediaPlayer =  mediaPlayerComponent.getMediaPlayer();
-		mainFrame.setContentPane(mediaPlayerComponent);
-		
-		contentPane.add(mediaPlayerComponent, BorderLayout.CENTER);
-		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
-		PlayerControlsPanel controlsPanel = new PlayerControlsPanel(mediaPlayer);
-		mainFrame.add(controlsPanel, BorderLayout.SOUTH);
-
 		controlsPanel.setButtonsActionListener(new ActionListener(){
 	        @Override
 			public void actionPerformed(ActionEvent e){
 	        	
 	        	if(e.getActionCommand() == "1")
 	        	{
-	        		System.out.println("Plus!");
 	        		num = num+1;
-	        		
+	       
 	        		if(num == 3)
 	        		{
 	        			num = 0;
 	        		}
-	        		
-	        		System.out.println(num);
-	        		
 	        	}
 	        	
 	        	else if(e.getActionCommand() == "2")
 	        	{
-	        		
-	        		System.out.println("Previous!");
 	        		num = num -1;
 	        		if(num == -1)
 	        		{
@@ -267,16 +278,18 @@ public class MEMEClient extends JFrame implements ActionListener {
 	        		PlayingStatus.setIcon(PrometheusPlaying);
 	        	}
 	        	
+	        	mediaPlayer.stop();
 	    		selectedTitle = videoList.get(num).getTitle();
 	    		System.out.println("Selected title : " + selectedTitle);
 	    		selectedFile = videoList.get(num).getFilename();
 	    		
 	    		try {
 	    			sendToServer();
+	    			mediaPlayer.play();
 	    		} catch (IOException e1) {
 	    			// TODO Auto-generated catch block
 	    			e1.printStackTrace();
-	    		}
+	    		} 
 	        }
 
 	    });
@@ -296,6 +309,7 @@ public class MEMEClient extends JFrame implements ActionListener {
 			num = 2;
 		}
 			
+		mediaPlayer.stop();
 		JButton button1 = (JButton) e.getSource();
 		selectedTitle = videoList.get(num).getTitle();
 		System.out.println("Selected title : " + selectedTitle);
@@ -303,18 +317,12 @@ public class MEMEClient extends JFrame implements ActionListener {
 		
 		try {
 			sendToServer();
+			mediaPlayer.play();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		} 
 			
-			/*try {
-				sendToServer(0);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			*/
 		disable(button1, 2000);
 		
 	}

@@ -163,12 +163,6 @@ public class MEMEServer {
 		String media = selectedTitle;
 		mediaPlayer.playMedia(media, options, ":no-sout-rtp-sap", ":no-sout-standardsap", ":sout-all", ":sout-keep");
 
-		// try {
-		// Thread.currentThread().join();
-		// } catch (InterruptedException e) {
-		// System.out.println("Exception thrown whilst streaming.");
-		// e.printStackTrace();
-		// }
 	}
 
 	public static void main(String[] args) {

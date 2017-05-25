@@ -37,12 +37,12 @@ public class MEMEClientTest
 		assertEquals("firstVideoFile.mpg", videoFile.getFilename()); 
 	}
 	
-	@Test
+	/*@Test
 	public void checkSelectedVideoInList() {
 	 JComboBox comboBox = client.selectionBox;
 	 comboBox.setSelectedIndex(2);
 	 assertEquals("Third Video", comboBox.getSelectedItem());
-	} 
+	} */
 	
 	@Test
 	public void DisplayErrorMessageforWrongFormat () {

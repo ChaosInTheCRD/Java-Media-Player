@@ -172,7 +172,6 @@ public class PlayerControlsPanel extends JPanel {
         
         bottomPanel.add(previousVideoButton);
         bottomPanel.add(stopButton);
-       // bottomPanel.add(pauseButton);
         bottomPanel.add(playButton);
         bottomPanel.add(toggleMuteButton);
         bottomPanel.add(nextVideoButton);
@@ -217,6 +216,8 @@ public class PlayerControlsPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mediaPlayer.stop();
+                playButton.setIcon(Play);
+                PlayOrPause = true;
             }
         });
 
@@ -261,9 +262,8 @@ public class PlayerControlsPanel extends JPanel {
             @Override
             public void stateChanged(ChangeEvent e) {
                 JSlider source = (JSlider)e.getSource();
-                // if(!source.getValueIsAdjusting()) {
                 mediaPlayer.setVolume(source.getValue());
-                // }
+
             }
         });
     }
