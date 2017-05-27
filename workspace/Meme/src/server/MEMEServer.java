@@ -42,7 +42,8 @@ public class MEMEServer {
 	HeadlessMediaPlayer mediaPlayer;
 	String selectedTitle;
 
-	public MEMEServer() { // TODO : CALL VLC LIBRARIES HERE
+	// Server Constructor
+	public MEMEServer() {
 
 		String vlcLibraryPath = "vlc-2.0.1";
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), vlcLibraryPath);
@@ -61,93 +62,99 @@ public class MEMEServer {
 		start();
 	}
 
-	public void start() {
-		socketThread = new Thread("Socket") {
-			public void run() {
-				try {
+	// Method that runs the server communication and pushes data back and forth
+	public void start() 
+	{
+		socketThread = new Thread("Socket")
+		{
+			public void run()
+			{
+				try 
+				{
 					openSocket();
 					writeListToSocket();
-
+					
 					boolean receivedFromClient = false;
 					inputFromClient = new ObjectInputStream(clientSocket.getInputStream());
 					selectedTitle = null;
-
-					while (!receivedFromClient) {
-						// Keep receiving from client
-						selectedTitle = (String) inputFromClient.readObject();
-
-						// if something is received, cut out of loop and start
-						// stream?
-						if (selectedTitle != null) {
-							System.out.println("received!");
-							// receivedFromClient = true; 
-
-							// check the loop was successful
-							System.out.println("Successfully chosen title at server: " + selectedTitle);
-							streamAndStart();
-							
-						}
-					}
-					System.out.println("through?");
-					// While loop to get stuck in
-					while (receivedFromClient == true) {
-					}
-
-					// boolean receivedFromClient=false;
-					// while(!receivedFromClient)
-					// {
-					// //TODO : KEEP RECEIVING FROM THE CLIENT
-					// //inputFromClient.readObject
-					// if(object !=null){
-					// //TODO : START STREAMANDSTART
-					// receivedFromClient=TRUE;
-					// }
-					// }
-
+					
+					// Loop to stay in to check for changes in the selected video
+					checkForChange(receivedFromClient);
+					
+					// Closing Socket at end of Application
 					clientSocket.close();
 					serverSocket.close();
-				} catch (IOException e) {
+				} 
+				
+				catch (IOException e) 
+				{
 					System.out.println("ERROR on socket connection.");
 					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
+				} 
+				catch (ClassNotFoundException e) 
+				{
 					e.printStackTrace();
 				}
 
 			}
+
+			private void checkForChange(boolean receivedFromClient) throws IOException, ClassNotFoundException {
+				while (!receivedFromClient)
+				{
+					selectedTitle = (String) inputFromClient.readObject();
+
+					if (selectedTitle != null)
+					{
+						System.out.println("Successfully chosen title at server: " + selectedTitle);
+						streamAndStart();	
+					}
+				}
+			}
 		};
+		
 		socketThread.start();
 	}
 
-	private void openSocket() throws IOException {
-		try {
+	// Opens the Socket on the Server end and waits to establish connection with client
+	private void openSocket() throws IOException
+	{
+		try
+		{
 			serverSocket = new ServerSocket(port);
 		}
 
-		catch (IOException e) {
+		catch (IOException e)
+		{
 			System.out.println("Could not listen on port : " + port);
 			System.exit(-1);
 		}
 
 		System.out.println("Opened socket on : " + port + ", waiting for client.");
 
-		try {
+		try 
+		{
 			clientSocket = serverSocket.accept();
-		} catch (IOException e) {
+		} 
+		catch (IOException e) 
+		{
 			System.out.println("Could not accept client.");
 			System.exit(-1);
 		}
-
+		
 		outputToClient = new ObjectOutputStream(clientSocket.getOutputStream());
-		// TODO : input from client here
-
 	}
 
-	private void writeListToSocket() throws IOException {
+	
+	// Writes the Video List to the socket
+	private void writeListToSocket() throws IOException 
+	{
 		outputToClient.writeObject(videoList);
 	}
+	
 
-	private String formatRtpStream(String serverAddress, int serverPort) {
+	// Setting out the serverAddress and serverPort inputs as one string
+	private String formatRtpStream(String serverAddress, int serverPort)
+	{
 		StringBuilder sb = new StringBuilder(60);
 		sb.append(":sout=#rtp{dst=");
 		sb.append(serverAddress);
@@ -156,16 +163,21 @@ public class MEMEServer {
 		sb.append(",mux=ts}");
 		return sb.toString();
 	}
-
-	public void streamAndStart() {
+	
+	
+	// Sends out the media to the Server Address for the Client to Receive
+	public void streamAndStart()
+	{
 		String serverAddress = "127.0.0.1";
 		String options = formatRtpStream(serverAddress, port);
 		String media = selectedTitle;
 		mediaPlayer.playMedia(media, options, ":no-sout-rtp-sap", ":no-sout-standardsap", ":sout-all", ":sout-keep");
-
 	}
 
-	public static void main(String[] args) {
+	
+	// Main Method
+	public static void main(String[] args)
+	{
 		new MEMEServer();
 	}
 

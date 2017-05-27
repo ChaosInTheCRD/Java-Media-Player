@@ -56,21 +56,20 @@ import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 public class PlayerControlsPanel extends JPanel {
-    // private static final long serialVersionUID = 1L;
-    //private static final int SKIP_TIME_MS = 10 * 1000;
-    //private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-
+	
+    // Used final to assure it's only assigned once
     private final EmbeddedMediaPlayer mediaPlayer;
-
     private JButton previousVideoButton;
     private JButton stopButton;
     private JButton playButton;
     private JButton nextVideoButton;
-
     private JButton toggleMuteButton;
     private JSlider volumeSlider;
+    
     private boolean PlayOrPause = false;
     private boolean MuteorSound = false;
+    
+    // Establishment of Buttons for Control Panel
     ImageIcon Play = new ImageIcon("Film_Pics/Icons/Play.png");
     ImageIcon Pause = new ImageIcon("Film_Pics/Icons/Pause.png");
     ImageIcon Mute = new ImageIcon("Film_Pics/Icons/Mute.png");
@@ -81,15 +80,18 @@ public class PlayerControlsPanel extends JPanel {
         createUI();
         
     }
-
+    
+    // Instantiates all the methods necessary for the UI output and functionality 
     private void createUI() {
         createControls();
         layoutControls();
         registerListeners();
     }
-
+ 
+    //Creates all the buttons necessary for the panel
     private void createControls() {
 
+    	// Previous Button
         previousVideoButton = new JButton();
         previousVideoButton.setIcon(new ImageIcon("Film_Pics/Icons/Previous.png"));
         previousVideoButton.setToolTipText("Go to previous chapter");
@@ -99,6 +101,7 @@ public class PlayerControlsPanel extends JPanel {
         previousVideoButton.setOpaque(false);
         previousVideoButton.setActionCommand("2");
         
+        // Stop Button
         stopButton = new JButton();
         stopButton.setIcon(new ImageIcon("Film_Pics/Icons/Stop.png"));
         stopButton.setToolTipText("Stop");
@@ -107,10 +110,7 @@ public class PlayerControlsPanel extends JPanel {
         stopButton.setFocusPainted(false); 
         stopButton.setOpaque(false);
 
-        /*pauseButton = new JButton();
-        pauseButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource("icons/control_pause_blue.png")));
-        pauseButton.setToolTipText("Play/pause");*/
-
+        // Play Button
         playButton = new JButton();
         playButton.setIcon(new ImageIcon("Film_Pics/Icons/Pause.png"));
         playButton.setToolTipText("Play");
@@ -119,7 +119,7 @@ public class PlayerControlsPanel extends JPanel {
         playButton.setFocusPainted(false); 
         playButton.setOpaque(false);
 
-
+        // Next Button
         nextVideoButton = new JButton();
         nextVideoButton.setIcon(new ImageIcon("Film_Pics/Icons/Next.png"));
         nextVideoButton.setToolTipText("Go to next chapter");
@@ -129,7 +129,7 @@ public class PlayerControlsPanel extends JPanel {
         nextVideoButton.setOpaque(false);
         nextVideoButton.setActionCommand("1");
 
-
+        // Mute Toggle
         toggleMuteButton = new JButton();
         toggleMuteButton.setIcon(new ImageIcon("Film_Pics/Icons/Mute.png"));
         toggleMuteButton.setToolTipText("Toggle Mute");
@@ -138,6 +138,7 @@ public class PlayerControlsPanel extends JPanel {
         toggleMuteButton.setFocusPainted(false); 
         toggleMuteButton.setOpaque(false);
 
+        // Volume Slider
         volumeSlider = new JSlider();
         volumeSlider.setOrientation(JSlider.HORIZONTAL);
         volumeSlider.setMinimum(LibVlcConst.MIN_VOLUME);
@@ -147,10 +148,11 @@ public class PlayerControlsPanel extends JPanel {
         volumeSlider.setOpaque(false);
 
     }
+    
+    //Sets the layout design/position for the panel and adds buttons
     private void layoutControls() {
     	
         setBorder(new EmptyBorder(0, 0, 0, 0));
-
         setLayout(new BorderLayout());
 
         JPanel positionPanel = new JPanel();
@@ -159,36 +161,28 @@ public class PlayerControlsPanel extends JPanel {
 
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout(8, 0));
-
         topPanel.add(positionPanel, BorderLayout.NORTH);
-
-
         add(topPanel, BorderLayout.NORTH);
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER,40,20));
-        
-       
         
         bottomPanel.add(previousVideoButton);
         bottomPanel.add(stopButton);
         bottomPanel.add(playButton);
         bottomPanel.add(toggleMuteButton);
         bottomPanel.add(nextVideoButton);
-
         bottomPanel.add(volumeSlider);
-       
-        
         add(bottomPanel, BorderLayout.NORTH);
         
-        //CHANING COLORS!
+        //Changes color of the panels
         bottomPanel.setBackground(Color.BLACK);
         topPanel.setBackground(Color.BLACK);
         positionPanel.setBackground(Color.BLACK);
     }
 
-    
-    public void setButtonsActionListener(ActionListener listener)
+    //ActionListeners for all used Buttons
+    public void NextPreviousActionListener(ActionListener listener)
     {
 
     	   nextVideoButton.addActionListener(listener);
@@ -220,7 +214,10 @@ public class PlayerControlsPanel extends JPanel {
                 PlayOrPause = true;
             }
         });
-
+        
+        // Play/Pause Button Combined Action Listener
+        // Changes Function and Icon between Pause and Play depending on
+        // if boolean is true or false
         playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -239,6 +236,7 @@ public class PlayerControlsPanel extends JPanel {
             }
         });
         
+        // Image flicker and implementation switch based on button press for Mute/Sound
         toggleMuteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -258,6 +256,7 @@ public class PlayerControlsPanel extends JPanel {
             }
         });
 
+        // Volume Slider Change Listener
         volumeSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -267,7 +266,8 @@ public class PlayerControlsPanel extends JPanel {
             }
         });
     }
-
+    
+    //Updates Volume Slider 
     private void updateVolume(int value) {
         volumeSlider.setValue(value);
     }

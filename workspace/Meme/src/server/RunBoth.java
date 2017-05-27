@@ -1,5 +1,12 @@
 package server;
 
-public class RunBoth {
+import client.MEMEClient;
+import server.MEMEServer;
+
+public class RunBoth 
+{
+	MEMEServer server = new MEMEServer();
+	MEMEClient client = new MEMEClient();
 
 }
+

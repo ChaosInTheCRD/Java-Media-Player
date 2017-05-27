@@ -53,10 +53,15 @@ public class XMLReaderTest {
 		assertTrue(videoFile.getFilename().equals("monstersinc_high.mpg"));
 		assertTrue(videoFile.getTitle().equals("Monsters Inc."));
 		
+		videoFile = videoList.get(1);
 		assertTrue(videoFile.getID().equals("20120102b7"));
 		assertTrue(videoFile.getFilename().equals("avengers-featurehp.mp4"));
 		assertTrue(videoFile.getTitle().equals("Avengers"));
-
+		
+		videoFile = videoList.get(2);
+		assertTrue(videoFile.getID().equals("20120102b4"));
+		assertTrue(videoFile.getFilename().equals("prometheus-featureukFhp.mp4"));
+		assertTrue(videoFile.getTitle().equals("Prometheus"));
 	}
 	
 }
